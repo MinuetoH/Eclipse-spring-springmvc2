@@ -62,7 +62,10 @@ p:maxInMemorySize="10485460">
 <bean id="exceptionHandler" 
      class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
   <property name="exceptionMappings">
-    <value>exception.LoginException=exception</value>
+    <value>
+    	exception.LoginException=exception
+    	exception.ItemException=exception
+    </value>
   </property>
 </bean>
 </beans>

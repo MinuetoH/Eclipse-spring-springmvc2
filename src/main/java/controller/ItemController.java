@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import exception.ItemException;
 import logic.Item;
 import logic.ShopService;
 /*
@@ -112,7 +114,12 @@ public class ItemController {
 	}	
 	@PostMapping("delete")
 	public String delete(Integer id) {	//뷰만 리턴
-		service.itemDelete(id);
+		try {
+			service.itemDelete(id);
+		} catch(DataIntegrityViolationException e) {
+			throw new ItemException
+				("주문된 상품이르로 삭제 불가합니다.","list");
+		}
 		return "redirect:list";
 	}	
 }

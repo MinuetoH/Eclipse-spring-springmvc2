@@ -298,16 +298,15 @@ public class UserController {
 		}
 		//정상적인 입력인 경우
 		String result = null;
-		try {
-			//result : 사용자id,또는 비밀번호 저장
-		    result = service.getSearch(user,url);
-		} catch (EmptyResultDataAccessException e) {
-			//조회 결과가 없는 경우 발생되는 예외
-			//뷰의 ${errors.globalErrors} 목록에 추가됨 
-			bresult.reject(code); //global 오류 영역 저장 
-			mav.getModel().putAll(bresult.getModel());
-			return mav;
-		}
+		//result : 사용자id,또는 비밀번호 저장
+		result = service.getSearch(user,url);
+		    
+		if(result == null) {
+		bresult.reject(code); //global 오류 영역 저장 
+		mav.getModel().putAll(bresult.getModel());
+		return mav;
+	    }
+//EmptyResultDataAccessException : mybatis에서 발생 안됨. 결과가 없는 경우
 		mav.addObject("result",result);
 		mav.addObject("title",title);
 		// /WEB-INF/view/user/search.jsp
