@@ -68,4 +68,12 @@ p:maxInMemorySize="10485460">
     </value>
   </property>
 </bean>
+
+<mvc:interceptors>
+	<mvc:interceptor>
+		<mvc:mapping path="/board/write" />
+		<bean class="interceptor.BoardInterceptor" />
+	</mvc:interceptor>
+</mvc:interceptors>
+
 </beans>

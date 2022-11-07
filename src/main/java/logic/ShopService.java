@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import dao.BoardDao;
 import dao.ItemDao;
 import dao.SaleDao;
 import dao.SaleItemDao;
@@ -28,6 +29,8 @@ public class ShopService {
 	private SaleDao saleDao;
 	@Autowired
 	private SaleItemDao saleItemDao;
+	@Autowired
+	private BoardDao boardDao;
 
 	public List<Item> itemList() {
 		return itemDao.list();
@@ -157,6 +160,15 @@ public class ShopService {
 			 sa.setItemList(saleitemlist);	//Sale 객채에 SaleItem 목록 추가
 		 }
 		return list;
+	}
+
+	public int boardcount(String boardid) {
+		return boardDao.count(boardid);
+	}
+
+	public List<Board> boardlist
+			(Integer pageNum, int limit, String boardid) {
+		return boardDao.list(pageNum,limit,boardid);
 	}
 
 }
