@@ -2,25 +2,30 @@ package logic;
 
 import java.util.Date;
 
+import javax.validation.constraints.NotEmpty;
+
 import org.springframework.web.multipart.MultipartFile;
 
 public class Board {
 	private int num;
 	private String boardid;
+	@NotEmpty(message="글쓴이를 입력하세요")
 	private String writer;
+	@NotEmpty(message="비밀번호를 입력하세요")
 	private String pass;
+	@NotEmpty(message="제목를 입력하세요")
 	private String subject;
+	@NotEmpty(message="내용를 입력하세요")
 	private String content;
 	private MultipartFile file1;
-	private String fileurl;
+	private String fileurl; //getter, setter
 	private String ip;
 	private Date regdate;
 	private int readcnt;
 	private int grp;
 	private int grplevel;
 	private int grpstep;
-	
-	//getter, setter, toString
+	//getter setter toString
 	public int getNum() {
 		return num;
 	}
@@ -105,6 +110,12 @@ public class Board {
 	}
 	public void setGrpstep(int grpstep) {
 		this.grpstep = grpstep;
+	}
+	@Override
+	public String toString() {
+		return "Board [num=" + num + ", boardid=" + boardid + ", writer=" + writer + ", pass=" + pass + ", subject="
+				+ subject + ", content=" + content + ", file1=" + file1 + ", ip=" + ip + ", regdate=" + regdate
+				+ ", readcnt=" + readcnt + ", grp=" + grp + ", grplevel=" + grplevel + ", grpstep=" + grpstep + "]";
 	}
 	
 }

@@ -23,7 +23,7 @@ import dao.UserDao;
 public class ShopService {
 	@Autowired  //ItemDao 객체를 주입. 
 	private ItemDao itemDao;
-	@Autowired  
+	@Autowired   
 	private UserDao userDao;
 	@Autowired
 	private SaleDao saleDao;
@@ -98,7 +98,7 @@ public class ShopService {
 		return userDao.selectOne(userid);
 	}
 
-	public void userUpdate(@Valid User user) {
+	public void userUpdate(User user) {
 		userDao.update(user);
 	}
 
@@ -117,13 +117,13 @@ public class ShopService {
 	public List<User> userlist() {
 		return userDao.list();
 	}
-	
+
 	/*
-	 * 로그인정보, 장바구니 정보에서 sale, saleitem 테이블에 데이터 저장
+	 * 로그인정보, 장바구니 정보에서 sale,saleitem 테이블에 데이터 저장
 	 * 결과를 Sale 객체로 저장
 	 * 1. sale 테이블의 saleid의 최대값 조회
 	 * 2. sale 테이블에 saleid의 최대값+1, userid, sysdate 등록
-	 * 3. Cart 테이블에서 saleitem 데이터 를 저장
+	 * 3. Cart 데이터에서 saleitem 데이터를 저장 
 	 * 4. Sale 객체에 모든 데이터 저장
 	 */
 	public Sale checkend(User loginUser, Cart cart) {
@@ -134,41 +134,61 @@ public class ShopService {
 		sale.setSaleid(maxid+1);
 		sale.setUserid(loginUser.getUserid());
 		sale.setUser(loginUser);
-		saleDao.insert(sale);
-		//3. Cart 테이블에서 saleitem 데이터 를 저장
+		saleDao.insert(sale); //sale 테이블에 데이터 저장
+		//3. Cart 데이터에서 saleitem 데이터를 저장
 		int seq = 0;
 		for(ItemSet is : cart.getItemSetList()) {
 			SaleItem saleItem = new SaleItem
 					(sale.getSaleid(),++seq,is);
 			sale.getItemList().add(saleItem);
-			saleItemDao.insert(saleItem);	//saleitem 테이블에 저장
+			saleItemDao.insert(saleItem); //saleitem 테이블에 저장
 		}
 		return sale;
 	}
 
 	public List<Sale> salelist(String id) {
-		//sale 테이블의 내용 저장
-		 List<Sale> list = saleDao.list(id);	//id 사용자가 주문정보 목록
-		 for(Sale sa : list) {
-			 //주문별 주문 상품 조회
-			 List<SaleItem> saleitemlist = saleItemDao.list(sa.getSaleid());
-			 //SaleItem 객체에 Item 객체 저장
-			 for(SaleItem si : saleitemlist) {
-				 Item item = itemDao.getItem(si.getItemid());
-				 si.setItem(item);	//Item 객체를 SaleItem 객체에 추가
-			 }
-			 sa.setItemList(saleitemlist);	//Sale 객채에 SaleItem 목록 추가
-		 }
+		//sale테이블의 내용 저장
+		List<Sale> list = saleDao.list(id);//id 사용자가 주문 정복목록 
+		for(Sale sa : list) {
+			//주문별 주문 상품 조회
+			List<SaleItem> saleitemlist = 
+					           saleItemDao.list(sa.getSaleid());
+			//SaleItem 객체에 Item 객체 저장
+			for(SaleItem si : saleitemlist) {
+				Item item = itemDao.getItem(si.getItemid());
+				si.setItem(item); //Item 객체를 SaleItem객체에 추가
+			}
+			//Sale 객체에 SaleItem 목록 추가
+			sa.setItemList(saleitemlist);
+		}
 		return list;
 	}
 
-	public int boardcount(String boardid) {
+	 public int boardcount(String boardid) {
 		return boardDao.count(boardid);
 	}
 
 	public List<Board> boardlist
-			(Integer pageNum, int limit, String boardid) {
+	        (Integer pageNum, int limit, String boardid) {
 		return boardDao.list(pageNum,limit,boardid);
 	}
 
+	public void boardwrite(Board board, HttpServletRequest request) {
+      //첨부 파일이 존재 : 파일 업로드
+	  if(board.getFile1() != null && !board.getFile1().isEmpty()){
+        String path=request.getServletContext().getRealPath("/") +
+        		  "board/file/";
+		uploadFileCreate(board.getFile1(),path);
+		board.setFileurl(board.getFile1().getOriginalFilename());
+	  }
+	  //1. num 컬럼의 최대값
+	  //2. board 테이블에 저장
+	  boardDao.insert(board);
+	}
+	public Board getBoard(Integer num) {
+		return boardDao.selectOne(num);
+	}
+	public void readcntadd(Integer num) {
+		boardDao.readcntadd(num);		
+	}
 }

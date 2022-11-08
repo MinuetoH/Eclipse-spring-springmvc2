@@ -25,6 +25,7 @@
 
 <!-- web 환경에서 객체 주입을 위한 설정 : @Autowired,@Controller... 기능 사용  -->
 <mvc:annotation-driven />
+
 <!-- AOP 기능 수행하도록 설정 -->
 <aop:aspectj-autoproxy />
 
@@ -38,19 +39,17 @@
   <property name="prefix"><value>/WEB-INF/view/</value></property>
   <property name="suffix"><value>.jsp</value></property>
 </bean>   
-<!-- 파일 업로드 설정 
-	요청 시 enctype="multipart/form-data" 형식인 경우 작동.
-	p:maxUploadSize : 100M 최대 업로드 가능 크기 설정
-	p:maxInMemorySize : 10M까지는 메모리에 파일의 내용 저장
+<!--  파일 업로드 설정
+   요청시 enctype="multipart/form-data" 형식인 경우 작동. 
+   p:maxUploadSize : 100M 최대 업로드 가능 크기 설정
+   p:maxInMemorySize : 10M까지는 메모리에 파일의 내용 저장 
 -->
-<bean id="multipartResolver" 
-class="org.springframework.web.multipart.commons.CommonsMultipartResolver" 
-p:maxUploadSize="104854600"
-p:maxInMemorySize="10485460">
-</bean>
+<bean id="multipartResolver" class=
+"org.springframework.web.multipart.commons.CommonsMultipartResolver"
+p:maxUploadSize="104854600" p:maxInMemorySize="10485460"></bean>
 
 <!-- message 코드값을 저장한 properties 파일을 설정. : 
-	 messages.properties message 처리를 위한 설정  -->
+     messages.properties  message 처리를 위한 설정  -->
 <bean id="messageSource"
   class="org.springframework.context.support.ResourceBundleMessageSource">
   <property name="basenames">
@@ -62,18 +61,19 @@ p:maxInMemorySize="10485460">
 <bean id="exceptionHandler" 
      class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
   <property name="exceptionMappings">
-    <value>
-    	exception.LoginException=exception
-    	exception.ItemException=exception
+    <value>exception.LoginException=exception
+           exception.ItemException=exception
     </value>
   </property>
 </bean>
 
 <mvc:interceptors>
-	<mvc:interceptor>
-		<mvc:mapping path="/board/write" />
-		<bean class="interceptor.BoardInterceptor" />
-	</mvc:interceptor>
+  <mvc:interceptor>
+    <mvc:mapping path="/board/write"/>
+    <mvc:mapping path="/board/update"/>
+    <mvc:mapping path="/board/delete"/>
+    <bean class="interceptor.BoardInterceptor" />
+  </mvc:interceptor>
 </mvc:interceptors>
 
 </beans>
