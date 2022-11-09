@@ -18,7 +18,7 @@ public class BoardInterceptor extends HandlerInterceptorAdapter{
 		HttpSession session = request.getSession(); //세션 객체
 		//boardid : 게시판 종류 
 		String boardid = (String)session.getAttribute("boardid");
-		//로그정보
+		//로그인정보
 		User login = (User)session.getAttribute("loginUser");
 		if(boardid == null || boardid.equals("1")) { //공지사항
 		  if(login == null || !login.getUserid().equals("admin")) {

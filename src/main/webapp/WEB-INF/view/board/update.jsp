@@ -27,17 +27,20 @@
 <tr><td>내용</td><td>
 <form:textarea path="content" cols="67" rows="15"/>
   <script type="text/javascript">
-     CKEDITOR.replace("content",{ filebrowserImageUploadUrl : "imgupload"});
+     CKEDITOR.replace("content",
+    		 { filebrowserImageUploadUrl : "imgupload"});
   </script>
       <form:errors path="content" class="errortext"/></td></tr>
 <tr><td>첨부파일</td><td>&nbsp;
    <c:if test="${!empty board.fileurl}"> <%-- 수정전에 첨부파일 존재  --%>
-     <div id="file_desc"><a href="file/${board.fileurl}">${board.fileurl}</a>&nbsp;
+     <div id="file_desc">
+     	 <a href="file/${board.fileurl}">${board.fileurl}</a>&nbsp;
          <a href="javascript:file_delete()">[첨부파일삭제]</a>
      </div></c:if>
      <input type="file" name="file1" id="file1">
   </td></tr><tr><td>비밀번호</td>
-   <td><form:password path="pass" /><form:errors path="pass" class="errortext"/></td></tr>
+   <td><form:password path="pass" />
+   	   <form:errors path="pass" class="errortext"/></td></tr>
    <tr><td colspan="2" align="center">
    <a href="javascript:document.updateform.submit()">[수정]</a>&nbsp;
    <a href="list?boardid=${boardid}">[목록]</a>
