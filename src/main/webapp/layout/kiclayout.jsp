@@ -13,12 +13,12 @@
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<script type="text/javascript" 
-src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js">
+<script type="text/javascript" src= 
+"https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js">
 </script>
 <%-- ckeditor 설정 --%>
 <script type="text/javascript" 
-		src="https://cdn.ckeditor.com/4.5.7/standard/ckeditor.js">
+   src="https://cdn.ckeditor.com/4.5.7/standard/ckeditor.js">
 </script>
 <style>
 html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
@@ -142,6 +142,23 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
   <footer class="w3-container w3-padding-16 w3-light-grey">
     <h4>FOOTER</h4>
     <p>Powered by <a href="https://www.w3schools.com/w3css/default.asp" target="_blank">w3.css</a></p>
+    <hr>
+    <div>
+    <span id="si">
+     <select name="si" onchange="getText('si')">
+	     <option value="">시도를 선택하세요</option>
+     </select>
+    </span>
+    <span id="gu">
+	<select name="gu" onchange="getText('gu')">
+		<option value="">구군을 선택하세요</option>
+	</select>
+    </span>
+    <span id="dong">
+	   <select name="dong">
+  		  <option value="">동리를 선택하세요</option>
+	   </select>
+    </span></div>   
   </footer>
 
   <!-- End page content -->
@@ -168,6 +185,73 @@ function w3_close() {
   overlayBg.style.display = "none";
 }
 </script>
-
+<script type="text/javascript">
+//$(function() : 문서 준비 완료.
+  $(function(){
+	  let divid;
+	  let si;
+/* 서버에서 배열 객체로 직접 전달	  
+	  $.ajax({   //jquery를 이용한 ajax 처리 
+		  url : "${path}/ajax/select",
+		  success : function(arr) {
+			  //arr : 배열 객체로 서버에서 직접 전달
+			  $.each(arr,function(i,item) {
+				  $("select[name=si]").append(function(){
+					  return "<option>"+item+"</option>"
+				  })
+			  })
+		  }
+	  })
+*/
+// 서버에서 문자열로 데이터 전달 받기
+	  $.ajax({   //jquery를 이용한 ajax 처리 
+		  url : "${path}/ajax/select2",
+		  success : function(data) {
+			  //data : utf-8로 인코딩된 순수 문자열 데이터. 
+			  //배열로 변환
+			  let arr = data.substring(data.indexOf('[')+1,
+					  data.indexOf(']')).split(",")
+			  $.each(arr,function(i,item) {
+				  $("select[name=si]").append(function(){
+					  return "<option>"+item+"</option>"
+				  })
+			  })
+		  }
+	  })
+  })
+ function getText(name) {
+	let city = $("select[name='si']").val(); 
+	let gu = $("select[name='gu']").val();  
+	let disname;
+	let toptext="구군을 선택하세요";
+	let params = "";
+	if (name == "si") {
+		params = "si=" + city.trim();
+		disname = "gu"; 
+	} else if (name == "gu") { 
+		params = "si=" + city.trim()+"&gu="+gu.trim();
+		disname = "dong";
+		toptext="동리를 선택하세요";		
+	} else { 
+		return ;
+	}
+	$.ajax({
+	  url : "${path}/ajax/select",
+	  type : "POST",    
+	  data : params,  			
+	  success : function(arr) {
+		  $("select[name="+disname+"] option").remove();
+		  $("select[name="+disname+"]").append(function(){
+			  return "<option value=''>"+toptext+"</option>"
+		  })
+		  $.each(arr,function(i,item) {
+			  $("select[name="+disname+"]").append(function(){
+				  return "<option>"+item+"</option>"
+			  })
+		  })
+	  }
+   })				
+}   
+</script>
 </body>
 </html>

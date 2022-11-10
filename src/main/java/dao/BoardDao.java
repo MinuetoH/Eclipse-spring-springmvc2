@@ -62,4 +62,7 @@ public class BoardDao {
 		board.setGrpstep(board.getGrpstep() + 1);
 		template.getMapper(cls).insert(board);
 	}
+	public void delete(Integer num) {
+		template.getMapper(cls).delete(num);
+	}
 }
