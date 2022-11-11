@@ -37,10 +37,19 @@ public class AjaxController {
 	@RequestMapping("select")
 	public List<String> select
 	   (String si,String gu,HttpServletRequest request) {
+		/*
+		 * BufferedReader : Reader => 문자형 입력스트림
+		 * 	- readLine() 메서드를 멤버로 가짐
+		 * 	- FileReader : 기존의 스트림에 필터 기능 추가
+		 * 				   생성자에서 기존스트림을 제공해야함
+		 */
 		BufferedReader fr = null;
+	   //path : sido.txt 파일의 절대 경로
 		String path = request.getServletContext().getRealPath("/")
 				+ "file/sido.txt";
 		try {
+			//FileReader(path) : path 위치의 파일을 읽기 위한 스트림
+			//fr : sido.txt 파일을 읽기 위한 스트림 객체
 			fr = new BufferedReader(new FileReader(path));
 		} catch(Exception e) {
 			e.printStackTrace();
@@ -49,8 +58,8 @@ public class AjaxController {
 		//LinkedHashSet : 중복불가. 순서 유지 가능
 		Set<String> set = new LinkedHashSet<>();
 		String data = null;
-		//si,gu 파라미터값이 없는 경우
-		if(si==null && gu == null) {
+		//si,gu 파라미터값이 없는 경우 : 처름 화면 초기화 시 파라미터 값이 없는 경우
+		if(si==null && gu == null) {	//시도 데이터들을 리턴
 			try {
 				//readLine() : 한줄씩 읽기
 				while((data=fr.readLine()) != null) {
