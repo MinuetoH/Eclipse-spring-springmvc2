@@ -1,7 +1,12 @@
 package logic;
 
 import java.io.File;
+import java.math.BigDecimal;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -191,27 +196,66 @@ public class ShopService {
 	public void readcntadd(Integer num) {
 		boardDao.readcntadd(num);		
 	}
-
 	//파일업로드, db 수정
-	public void boardUpdate(Board board, HttpServletRequest request) {
-		//수정 시 파일 업로드가 발생됨. 첨부파일 수정됨
-		if(board.getFile1() != null && board.getFile1().isEmpty()) {
-			String path = request.getServletContext().getRealPath("/")
+	public void boardUpdate
+	        (Board board, HttpServletRequest request) {
+		//수정시 파일업로드가 발생됨. 첨부파일 수정됨 
+		if(board.getFile1()!=null && !board.getFile1().isEmpty()) {
+		  String path = request.getServletContext().getRealPath("/")
 					+ "board/file/";
-			uploadFileCreate(board.getFile1(),path);
-			board.setFileurl(board.getFile1().getOriginalFilename());
+		  uploadFileCreate(board.getFile1(),path);
+		  board.setFileurl(board.getFile1().getOriginalFilename());
 		}
 		boardDao.update(board);
 	}
 
-	public void boardReply(Board board) {
-		//순서지정. 원글에 grpstep보다 큰 grpstep을 가진 레코드의
-		//		 grpstep의 값을 +1 수정
-		boardDao.grpStepAdd(board);	
+	public void boardReply( Board board) {
+		 //순서지정. 원글에 grpstep보다 큰 grpstep을 가진 레코드의
+		//         grpstep의 값을 +1 수정 
+		boardDao.grpStepAdd(board);
 		boardDao.reply(board);
 	}
 
 	public void boardDelete(Integer num) {
 		boardDao.delete(num);
+	}
+
+	public Map<String, Integer> graph1(String id) {
+		List<Map<String,Object>> list = boardDao.graph1(id);
+	     /* [{WRITER=홍길동,CNT=3},
+          * {WRITER=김삿갓,CNT=2},
+	      * {WRITER=이몽룡,CNT=1}]
+		*/
+		System.out.println(list);
+		/*
+		 * {홍길동=3,김삿갓=2,이몽룡=1} 형태로 변경하기
+		 */
+		Map<String,Integer> map = new HashMap<>();
+		for(Map<String,Object> m : list) {
+			//WRITER : 컬럼명. 오라클은 대문자로 출력됨
+			//m : {WRITER=이몽룡,CNT=1}
+		    String writer =(String)m.get("WRITER"); //이몽룡
+		    long bcnt = ((BigDecimal) m.get("CNT")).longValue(); 
+		    Integer cnt = (int)bcnt; //등록건수값
+		    map.put(writer,cnt); //{"홍길동"=3,"김삿갓"=2,"이몽룡"=1}
+		}
+		return map;
+	}
+
+	public Map<String, Integer> graph2(String id) {
+		List<Map<String,Object>> list = boardDao.graph2(id);
+		//list : [{DAY="22-10-11",CNT=5},{DAY="22-10-10",CNT=10}...]
+		//날짜의 역순으로 저장
+		Map<String,Integer> map = 
+				         new TreeMap<>(Comparator.reverseOrder());
+		for(Map<String,Object> m : list) { 
+			String day =(String)m.get("DAY");
+			long bcnt = ((BigDecimal) m.get("CNT")).longValue(); 
+			Integer cnt = (int)bcnt; 
+			map.put(day,cnt);
+		}
+		//map : {"22-10-11"=5,"22-10-10"=10,....}
+		System.out.println(map);
+		return map;
 	}
 }

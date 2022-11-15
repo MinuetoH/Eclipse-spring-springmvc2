@@ -42,13 +42,14 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
   </span>
 </div>
 <!-- Sidebar/menu -->
-<nav class="w3-sidebar w3-collapse w3-white w3-animate-left" style="z-index:3;width:300px;" id="mySidebar"><br>
-  <div class="w3-container w3-row">
-    <div class="w3-col s4">
+<nav class="w3-sidebar w3-collapse w3-white w3-animate-left" 
+   style="z-index:3;width:200px;" id="mySidebar"><br>
+  <div class="w3-container">
+    <div class="w3-row">
       <img src="${path}/image/logo.png" 
-         class="w3-circle w3-margin-right" style="width:100px">
+         class="w3-circle" style="width:100px">
     </div>
-    <div class="w3-col s8 w3-bar">
+    <div class="w3-row w3-margin-top">
       <c:if test="${!empty sessionScope.loginUser}">
       <span>반갑습니다, <strong>${sessionScope.loginUser.username}님</strong></span><br>
       </c:if>
@@ -84,52 +85,34 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
 <div class="w3-overlay w3-hide-large w3-animate-opacity" onclick="w3_close()" style="cursor:pointer" title="close side menu" id="myOverlay"></div>
 
 <!-- !PAGE CONTENT! -->
-<div class="w3-main" style="margin-left:300px;margin-top:43px;">
+<div class="w3-main" style="margin-left:200px;margin-top:43px;">
 
   <!-- Header -->
   <header class="w3-container" style="padding-top:22px">
-    <h5><b><i class="fa fa-dashboard"></i> My Dashboard</b></h5>
+    <h5><b><i class="fa fa-dashboard"></i>게시판현황</b></h5>
   </header>
-
   <div class="w3-row-padding w3-margin-bottom">
-    <div class="w3-quarter">
-      <div class="w3-container w3-red w3-padding-16">
-        <div class="w3-left"><i class="fa fa-comment w3-xxxlarge"></i></div>
-        <div class="w3-right">
-          <h3>52</h3>
-        </div>
-        <div class="w3-clear"></div>
-        <h4>Messages</h4>
+    <div class="w3-half w3-center">
+      <div class="w3-container w3-padding-16">
+       <input type="radio" name="pie" onchange="piegraph(2)" 
+            checked="checked">자유게시판&nbsp;&nbsp;
+       <input type="radio" name="pie" onchange="piegraph(3)">QNA 
+       <div id="piecontainer" 
+           style="width:100%; border:1px solid #ffffff">
+         <canvas id="canvas1" style="width:100%"></canvas> 
+       </div>
       </div>
     </div>
-    <div class="w3-quarter">
-      <div class="w3-container w3-blue w3-padding-16">
-        <div class="w3-left"><i class="fa fa-eye w3-xxxlarge"></i></div>
-        <div class="w3-right">
-          <h3>99</h3>
-        </div>
-        <div class="w3-clear"></div>
-        <h4>Views</h4>
-      </div>
-    </div>
-    <div class="w3-quarter">
-      <div class="w3-container w3-teal w3-padding-16">
-        <div class="w3-left"><i class="fa fa-share-alt w3-xxxlarge"></i></div>
-        <div class="w3-right">
-          <h3>23</h3>
-        </div>
-        <div class="w3-clear"></div>
-        <h4>Shares</h4>
-      </div>
-    </div>
-    <div class="w3-quarter">
-      <div class="w3-container w3-orange w3-text-white w3-padding-16">
-        <div class="w3-left"><i class="fa fa-users w3-xxxlarge"></i></div>
-        <div class="w3-right">
-          <h3>50</h3>
-        </div>
-        <div class="w3-clear"></div>
-        <h4>Users</h4>
+    <div class="w3-half w3-center">
+      <div class="w3-container w3-padding-16">
+    <input type="radio" name="barline" onchange="barlinegraph(2)" 
+    checked="checked">자유게시판&nbsp;&nbsp;
+    <input type="radio" name="barline" onchange="barlinegraph(3)">
+    QNA 
+      <div id="barcontainer" 
+            style="width:100%; border:1px solid #ffffff">
+         <canvas id="canvas2" style="width:100%"></canvas>
+       </div>
       </div>
     </div>
   </div>
@@ -164,6 +147,9 @@ html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
   <!-- End page content -->
 </div>
 
+<script type="text/javascript"
+	src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
+
 <script>
 // Get the Sidebar
 var mySidebar = document.getElementById("mySidebar");
@@ -188,6 +174,9 @@ function w3_close() {
 <script type="text/javascript">
 //$(function() : 문서 준비 완료.
   $(function(){
+	  piegraph(2);
+	  barlinegraph(2)
+/////////////////////////	  
 	  let divid;
 	  let si;
 /* 서버에서 배열 객체로 직접 전달	  
@@ -219,7 +208,7 @@ function w3_close() {
 		  }
 	  })
   })
- function getText(name) {
+ function getText(name) { //gu
 	let city = $("select[name='si']").val(); 
 	let gu = $("select[name='gu']").val();  
 	let disname;
@@ -240,9 +229,9 @@ function w3_close() {
 	  type : "POST",    
 	  data : params,  			
 	  success : function(arr) {
-		  //데이처를 추가해야 하는 select 태그의 option 태그들을 전부 제거
+		  //데이터를 추가해야 하는 select 태그의 option 태그들을 전부 제거
 		  $("select[name="+disname+"] option").remove();
-		  //첫번째 option 객체 추가
+		  //첫번째 option 객체 추가 
 		  $("select[name="+disname+"]").append(function(){
 			  return "<option value=''>"+toptext+"</option>"
 		  })
@@ -254,7 +243,127 @@ function w3_close() {
 		  })
 	  }
    })				
-}   
+}
+//색상 지정
+let randomColorFactor = function(){
+	  return Math.round(Math.random() * 255);
+}
+let randomColor = function(opa) {
+	  return "rgba("+ randomColorFactor() + ","
+			  + randomColorFactor() + ","
+			  + randomColorFactor() + ","
+			  + (opa || '.3') + ")";
+}
+function  piegraph(id) { //
+   $.ajax("${path}/ajax/graph1?id="+id,{
+	   success: function(json) {
+		   let canvas=
+		   '<canvas id="canvas1" style="width:100%"></canvas>'
+		   $("#piecontainer").html(canvas);
+		   pieGraphPrint(json,id);
+	   },
+	   error:function(e){
+		   alert("서버오류:"+e.status)
+	   }
+   })	
+}
+function  barlinegraph(id) { //이전 7일 부터 날짜별 등록된 건수 
+   $.ajax("${path}/ajax/graph2?id="+id,{
+	   success: function(json) {
+		   let canvas=
+		   '<canvas id="canvas2" style="width:100%"></canvas>'
+		   $("#barcontainer").html(canvas);
+		   barlineGraphPrint(json,id);
+	   },
+	   error:function(e){
+		   alert("서버오류:"+e.status)
+	   }
+   })		
+}
+function pieGraphPrint(json,id) {
+	//json:[{"홍길동":3},{"김삿갓":2},{"이몽룡":1}] 
+    let colors = [] //파이그래프의 색상을 저장 배열
+    let writers = [] //글작성자배열
+    let datas = []   //글작성건수 배열
+    //index : json 배열의 인덱스
+	$.each(json,function(index) {
+		colors[index] = randomColor(0.5);
+		for(key in json[index]) {
+			writers.push(key) //글작성자이름
+			datas.push(json[index][key]) //글작성건수
+		}
+	})
+	let title = (id==2)?"자유게시판":"QNA";
+	var config = {
+		  type : 'pie',  //그래프 종류
+		  data : {
+			  datasets : [{ data : datas,	 
+				            backgroundColor:colors }],
+			  labels : writers
+		  },
+	      options : {
+	    	responsive : true,
+	    	legend : {display:true, position:"right"},
+	    	title : {
+	    		display : true,
+     		    text : '글쓴이 별 '+title+' 등록 건수',
+	    		position : 'bottom'   //제목을 하단에 표시
+	    	}
+	      }
+	}
+	let ctx = document.getElementById("canvas1");
+	new Chart(ctx,config);
+}
+function barlineGraphPrint(json,id) {
+    let colors = [] 
+    let days = []  
+    let datas = [] 
+	$.each(json,function(index) {
+		colors[index] = randomColor(0.5);
+		for(key in json[index]) {
+			days.push(key)
+			datas.push(json[index][key])
+		}
+	})
+	let chartData = {
+		labels: days, 
+		datasets: [{
+			type: 'line',       borderWidth: 2,
+			borderColor:colors, label: '건수',
+			fill: false,        data: datas,
+		}, {
+			type: 'bar',             label: '건수',
+			backgroundColor: colors, data: datas
+		}]
+      }
+	let title = (id==2)?"자유게시판":"QNA";
+    let config = {
+			type: 'bar',
+			data: chartData,
+			options: {			
+				responsive: true,
+				title: {display: true,
+					    text: '최근 7일 '+title+' 등록 건수',
+					    position : 'bottom'
+				},
+				legend : {display : false },
+				scales: {
+					xAxes: [{  display : true,
+					       scaleLabel:  {   display : true,   labelString : "작성일자"},
+					       }],
+				    yAxes: [{
+					       scaleLabel:  {
+					           display : true,
+					           labelString : "게시물 등록 건수"
+					       },
+					       ticks: { beginAtZero: true   } 
+		                }]			    
+				}
+			}
+    }
+	let ctx = document.getElementById('canvas2');
+	new Chart(ctx,config);
+}
 </script>
 </body>
 </html>
